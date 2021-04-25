@@ -1,0 +1,20 @@
+#sidebar {
+    width: 300px;
+}
+
+ul {
+    list-style: none;
+}
+
+ul li {
+    margin: 30px;
+    background: aliceblue;
+    padding: 20px;
+}
+
+ul li a {
+    text-decoration: none;
+
+    background: aliceblue;
+    padding: 20px;
+}

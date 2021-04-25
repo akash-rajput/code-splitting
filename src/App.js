@@ -1,11 +1,17 @@
 import React from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Dashboard from './Dashboard';
 
-import "./styles.css";
+import './styles.css';
 
 export default function App() {
   return (
     <div className="App">
-      <h1>The Dashboard</h1>
+      <Router>
+        <Switch>
+          <Route path="/" component={Dashboard} />
+        </Switch>
+      </Router>
     </div>
   );
 }

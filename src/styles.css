@@ -1,5 +1,22 @@
 .App {
     font-family: sans-serif;
+    max-width: 1440px;
     text-align: center;
   }
   
+  .container {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    justify-content: flex-start;
+  }
+
+  .title {
+    border-bottom: 1px solid green;
+    padding-bottom: 1rem;
+    text-align: start;
+  }
+
+  .column-display {
+    flex-direction: column;
+  }
