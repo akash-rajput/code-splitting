@@ -1,12 +1,13 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Commits from './Commits';
-import Collaborators from './Collaborators';
-import PullRequests from './PullRequests';
-import Statistics from './Statistics';
+import { Switch, Route } from 'react-router-dom';
 import Sidebar from './Sidebar';
 
 import './dashboard.css';
+
+const Commits = React.lazy(() => import('./Commits'));
+const Collaborators = React.lazy(() => import('./Collaborators'));
+const PullRequests = React.lazy(() => import('./PullRequests'));
+const Statistics = React.lazy(() => import('./Statistics'));
 
 export default class Dashboard extends React.Component {
   constructor(props) {
