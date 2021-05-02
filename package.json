@@ -10,12 +10,15 @@
   },
   "dependencies": {
     "@octokit/core": "3.2.1",
+    "@tinymce/tinymce-react": "3.12.3",
     "reacharts": "0.4.5",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-modal": "3.13.1",
     "react-router-dom": "5.2.0",
     "react-slick": "0.28.1",
     "react-table": "7.6.3",
+    "recharts": "2.0.9",
     "tinymce": "^4.7.4"
   },
   "devDependencies": {
