@@ -1,6 +1,10 @@
 
 import { Octokit } from '@octokit/core';
-const GITHUB_ACCESS_TOKEN = `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`;
+
+export const REPO = 'code-splitting';
+export const REPO_OWNER = 'akash-rajput';
+const GITHUB_ACCESS_TOKEN = `KEEP_THE_TOKEN_SAFE`;
+
 export const octokit = new Octokit({
 auth : GITHUB_ACCESS_TOKEN,
 });

@@ -1,48 +1,108 @@
 import React, { useEffect, useState } from 'react';
-import { PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'reacharts';
+import {
+  Bar,
+  BarChart,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
-import { octokit } from './client';
+import { octokit, REPO, REPO_OWNER } from './client';
+
+const MONTHS = [
+  {
+    abbreviation: 'Jan',
+    name: 'January',
+  },
+  {
+    abbreviation: 'Feb',
+    name: 'February',
+  },
+  {
+    abbreviation: 'Mar',
+    name: 'March',
+  },
+  {
+    abbreviation: 'Apr',
+    name: 'April',
+  },
+  {
+    abbreviation: 'May',
+    name: 'May',
+  },
+  {
+    abbreviation: 'Jun',
+    name: 'June',
+  },
+  {
+    abbreviation: 'Jul',
+    name: 'July',
+  },
+  {
+    abbreviation: 'Aug',
+    name: 'August',
+  },
+  {
+    abbreviation: 'Sep',
+    name: 'September',
+  },
+  {
+    abbreviation: 'Oct',
+    name: 'October',
+  },
+  {
+    abbreviation: 'Nov',
+    name: 'November',
+  },
+  {
+    abbreviation: 'Dec',
+    name: 'December',
+  },
+];
 
 export const Statistics = () => {
-  const [data, setData] = useState([
-    {
-      createdAt: '',
-    },
-  ]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     octokit
       .request('GET /repos/{owner}/{repo}/commits', {
-        owner: 'akash-rajput',
-        repo: 'code-splitting',
+        owner: REPO_OWNER,
+        repo: REPO,
       })
-      .then((response) => setData(response.data));
+      .then((response) => {
+        const da = [];
+        MONTHS.forEach((month, monthIdx) => {
+          da[monthIdx] = {
+            name: month.name,
+            commits: 0,
+          };
+          response.data.forEach((commit) => {
+            const commitDate = new Date(commit.commit.committer.date);
+            if (commitDate.getMonth() === monthIdx) {
+              da[monthIdx].commits = da[monthIdx].commits + 1;
+            }
+          });
+        });
+
+        setData(da);
+      });
   }, []);
 
   return (
     <div className="container column-display">
       <h1 className="title">Statistics</h1>
       <hr />
-      <RadarChart outerRadius={90} width={730} height={250} data={data}>
-        <PolarGrid />
-        <PolarAngleAxis dataKey="subject" />
-        <PolarRadiusAxis angle={30} domain={[0, 150]} />
-        <Radar
-          name="Mike"
-          dataKey="A"
-          stroke="#8884d8"
-          fill="#8884d8"
-          fillOpacity={0.6}
-        />
-        <Radar
-          name="Lily"
-          dataKey="B"
-          stroke="#82ca9d"
-          fill="#82ca9d"
-          fillOpacity={0.6}
-        />
-        <Legend />
-      </RadarChart>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart width={150} height={500} data={data}>
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="commits" fill="#8884d8" />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 };

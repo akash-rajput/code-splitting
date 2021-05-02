@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import './sidebar.css'
+import './sidebar.css';
 
 export default class Sidebar extends React.Component {
   render() {

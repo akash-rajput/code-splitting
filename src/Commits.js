@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useTable } from 'react-table';
-import { octokit } from './client';
+import { octokit, REPO, REPO_OWNER } from './client';
 
 export const Commits = () => {
-  const [data, setData] = useState([
-    {
-      createdAt: '',
-    },
-  ]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     octokit
       .request('GET /repos/{owner}/{repo}/commits', {
-        owner: 'akash-rajput',
-        repo: 'code-splitting',
+        owner: REPO_OWNER,
+        repo: REPO,
       })
       .then((response) => setData(response.data));
   }, []);

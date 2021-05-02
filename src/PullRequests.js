@@ -1,74 +1,87 @@
-import React, { useEffect, useState,useRef } from 'react';
+import { Editor } from '@tinymce/tinymce-react';
+import React, { useEffect, useRef, useState } from 'react';
+import Modal from 'react-modal';
 import { useTable } from 'react-table';
-import tinymce from 'tinymce/tinymce';
 
-import 'tinymce/plugins/code';
-import 'tinymce/plugins/colorpicker';
-import 'tinymce/plugins/lists';
-import 'tinymce/plugins/pagebreak';
-import 'tinymce/plugins/table';
-import 'tinymce/plugins/textcolor';
-
-import { octokit } from './client';
+import { octokit, REPO, REPO_OWNER } from './client';
 
 export const PullRequests = () => {
-  const [data, setData] = useState([
-    {
-      createdAt: '',
-    },
-  ]);
+  const [data, setData] = useState([]);
+  const [commentPull, setCommentPull] = useState();
+
+  const onModalOpen = (pull) => {
+    setCommentPull(pull);
+  };
+  const onModalClose = () => {
+    setCommentPull(null);
+  };
+
+  const onAddComment = () => {
+    octokit
+      .request(`POST ${commentPull}/comments`, {
+        body: editorRef.current.getContent(),
+        position: 0,
+      })
+      .then(() => {
+        alert('Comment added');
+      });
+  };
 
   useEffect(() => {
     octokit
-      .request('GET /repos/{owner}/{repo}/commits', {
-        owner: 'akash-rajput',
-        repo: 'code-splitting',
+      .request('GET /repos/{owner}/{repo}/pulls', {
+        owner: REPO_OWNER,
+        repo: REPO,
+        state: 'all',
       })
       .then((response) => setData(response.data));
-
-
-      tinymce.init({
-        selector: `#editor`,
-        content_style:
-          '.mce-content-body {font-size:12px;font-family:Arial,sans-serif;}',
-        height: 500,
-        width: 754,
-        skin_url: `/skins/lightgray`,
-        toolbar1: `undo redo | formatselect | bold italic strikethrough
-          forecolor backcolor | link |
-          alignleft aligncenter alignright alignjustify |
-          numlist bullist outdent indent |
-          removeformat | fontselect | fontsizeselect | ${toolbar}`,
-        plugins: 'code table lists colorpicker textcolor pagebreak',
-        fontsize_formats: '8px 10px 12px 14px 18px 24px 36px',
-        setup: editor => {
-        },
-      });
   }, []);
 
   const editorRef = useRef(null);
-  const log = () => {
-    if (editorRef.current) {
-      console.log(editorRef.current.getContent());
-    }
-  };
+
   const columns = React.useMemo(
     () => [
       {
         Header: 'Date',
-        accessor: 'commit.author.date',
+        accessor: 'updated_at',
       },
       {
-        Header: 'Hash',
-        accessor: 'sha',
+        Header: 'Base',
+        accessor: 'base.label',
       },
       {
-        Header: 'Message',
-        accessor: 'commit.message',
+        Header: 'Head',
+        accessor: 'head.label',
       },
       {
-        Header: 'Author',
-        accessor: 'author.login',
+        Header: 'State',
+        accessor: 'state',
+      },
+      {
+        Header: 'View',
+        accessor: 'html_url',
+        Cell: (cell) => {
+          return (
+            <a href={cell.value} target="_blank">
+              view
+            </a>
+          );
+        },
+      },
+      {
+        Header: 'Comment',
+        accessor: 'url',
+        Cell: (cell) => {
+          return (
+            <button
+              onClick={() => {
+                onModalOpen(cell.value);
+              }}
+            >
+              Add comment
+            </button>
+          );
+        },
       },
     ],
     []
@@ -128,15 +141,35 @@ export const PullRequests = () => {
           })}
         </tbody>
       </table>
-      <div
+      <Modal
+        isOpen={!!commentPull}
+        onRequestClose={onModalClose}
+        contentLabel="Add Comment"
       >
-        <textarea id="editor" />
-        <label>
-
-        </label>
-        <div id="editor-modal" />
-      </div>
-       <button onClick={log}>Log editor content</button>
+        <h2>Comment on pull request</h2>
+        <button onClick={onModalClose}>close</button>
+        <Editor
+          onInit={(evt, editor) => (editorRef.current = editor)}
+          initialValue="<p>This is the initial content of the editor.</p>"
+          init={{
+            height: 500,
+            menubar: false,
+            plugins: [
+              'advlist autolink lists link image charmap print preview anchor',
+              'searchreplace visualblocks code fullscreen',
+              'insertdatetime media table paste code help wordcount',
+            ],
+            toolbar:
+              'undo redo | formatselect | ' +
+              'bold italic backcolor | alignleft aligncenter ' +
+              'alignright alignjustify | bullist numlist outdent indent | ' +
+              'removeformat | help',
+            content_style:
+              'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+          }}
+        />
+        <button onClick={onAddComment}>Add comment</button>
+      </Modal>
     </div>
   );
 };

@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { octokit } from './client';
+import { octokit, REPO, REPO_OWNER } from './client';
 import Slider from 'react-slick';
 
 import './collaborators.css';
+
 export const Collaborators = () => {
-  const [data, setData] = useState([
-    {
-      createdAt: '',
-    },
-  ]);
+  const [data, setData] = useState([]);
 
   const settings = {
     dots: true,
@@ -21,8 +18,8 @@ export const Collaborators = () => {
   useEffect(() => {
     octokit
       .request('GET /repos/{owner}/{repo}/contributors', {
-        owner: 'akash-rajput',
-        repo: 'code-splitting',
+        owner: REPO_OWNER,
+        repo: REPO,
       })
       .then((response) => {
         setData(response.data);
@@ -36,7 +33,7 @@ export const Collaborators = () => {
       <div>
         <Slider {...settings}>
           {data.map((user) => (
-            <div className="slide">
+            <div key={user.id} className="slide">
               <h3>{user.login}</h3>
               <img src={user.avatar_url} width={150} heigt={150} />
               <button>View Profile</button>
